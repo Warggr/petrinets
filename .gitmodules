@@ -1,0 +1,3 @@
+[submodule "client/dependencies/petri-js"]
+	path = client/dependencies/petri-js
+	url = https://github.com/warggr/petri-js.git
