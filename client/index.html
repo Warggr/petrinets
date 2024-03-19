@@ -10,13 +10,32 @@
 <script type="module">
 import { BipartiteGraphRenderer, PetriNetController } from './dist/import-me.js';
 
+const container = document.getElementById('container'); // this isn't actually required, but it's cleaner
+
 const ws = new WebSocket('ws://localhost:8000');
-ws.onclose = () => console.warn('Websocket closed');
 ws.onerror = () => console.warn('Websocket error');
-ws.onmessage = event => {
-    const data = event.data;
-    console.log(data);
+function nextMessage() { return new Promise((resolve, reject) => {
+	ws.onmessage = event => resolve(event.data);
+	ws.onclose = () => reject(new Error('Websocket closed', { cause: 'WSClosed' }));
+})}
+// TODO: this is bad code, because calling nextMessage a second time will steal the message from the first call
+
+(async () => {
+const data = JSON.parse(await nextMessage());
+const transitionsByName = Object.fromEntries(data.model.transitions.map(transition => [transition.name, transition]));
+const renderer = BipartiteGraphRenderer.fromPetriNetModel(data.model, container);
+const controller = new PetriNetController(data.model, data.startingState);
+
+controller.onChangeState = (newState, cause) => renderer.setState(newState, cause);
+renderer.setState(data.startingState)
+
+while(true){
+	const message = JSON.parse(await nextMessage());
+	const transition = transitionsByName[message.trname];
+	if(transition === undefined) console.error(`Couldn\'t find transition ${message.trname}. Possible keys are: ${Object.keys(transitionsByName)}.`);
+	else controller.fire(transition);
 }
+})().catch(err => { if(err.cause != 'WSClosed') throw err; else{ console.log(err.message) }});
 </script>
 </body>
 </html>
