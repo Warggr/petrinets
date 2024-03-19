@@ -3,11 +3,18 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
+    "build": "rollup -c",
+    "serve": "http-server .",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "dependencies": {
-    "petri-js": "file:deps/petri-js"
+    "@rollup/plugin-commonjs": "^25.0.7",
+    "@rollup/plugin-node-resolve": "^15.2.3",
+    "http-server": "^14.1.1",
+    "petri-js": "file:dependencies/petri-js",
+    "rollup": "^4.13.0",
+    "rollup-plugin-node-polyfills": "^0.2.1"
   },
-  "author": "",
+  "author": "Pierre Ballif <pierre.ballif@tum.de>",
   "license": "ISC"
 }

@@ -4,11 +4,12 @@
 	<meta charset="utf-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1">
 	<title>Test page</title>
-	<script type="module" src="node_modules/petri-js/"/>
 </head>
 <body>
 <div id="container"></div>
-<script>
+<script type="module">
+import { BipartiteGraphRenderer, PetriNetController } from './dist/import-me.js';
+
 const ws = new WebSocket('ws://localhost:8000');
 ws.onclose = () => console.warn('Websocket closed');
 ws.onerror = () => console.warn('Websocket error');
